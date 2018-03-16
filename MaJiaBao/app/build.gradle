@@ -1,0 +1,41 @@
+apply plugin: 'com.android.application'
+
+android {
+    compileSdkVersion 26
+    defaultConfig {
+        applicationId "com.example.majiabao"
+        minSdkVersion 15
+        targetSdkVersion 26
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [APP_NAME: '多宝贷理财']// 配置主包的应用名称
+    }
+    //为了让马甲包和主包的应用图标不一样，在src目录下新建一个以马甲包后缀名命名的目录majiabaoOne目录，
+    //在majiabaoOne目录下新建一个res目录，在res目录下添加各种尺寸的图标，然后马甲包编译的时候就会用该目录下的资源文件
+    //我直接在网上找的jpg图片，然后改后缀名为png图片，然后就报错：error: failed to read PNG signature: file does not start with PNG signature.
+    aaptOptions { cruncherEnabled = false } //解决报错Error:error: failed to read PNG signature: file does not start with PNG signature.
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        //Build->Generate Signed APK->配置签名文件->选择打包方式
+        //当选择release方式时，打包出来的应用名称为多宝贷理财，applicationId为com.example.majiabao
+        //当选择majiabaoOne方式时，打包出来的应用名称为初见初恋（马甲包的应用名称），applicationId为com.example.majiabao.majiabaoOne
+        majiabaoOne.initWith(buildTypes.release)
+        majiabaoOne{
+            applicationIdSuffix ".majiabaoOne" // 修改马甲包的applicationId，马甲包的applicationId将为com.example.majiabao.majiabaoOne，即在原来的applicationId后加上配置内容
+            manifestPlaceholders = [APP_NAME: '初见初恋']// 配置马甲包的应用名称
+        }
+    }
+}
+
+dependencies {
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation 'com.android.support:appcompat-v7:26.1.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    testImplementation 'junit:junit:4.12'
+    androidTestImplementation 'com.android.support.test:runner:1.0.1'
+    androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.1'
+}
